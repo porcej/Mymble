@@ -1,30 +1,60 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterLink, RouterView } from 'vue-router';
+
+import { useAuthStore } from '@/stores';
+
+const authStore = useAuthStore();
+
+const pagePermitted = {
+  access: checkRoles("access"),
+  settings: checkRoles("settings"),
+  messanger: checkRoles("messanger"),
+};
+
+/**
+ * Checks if roles are permitted - wraps fetch to handle an api with authentication 
+ *
+ * @params {String} page page requesting access for
+ * @returns {Bool} true iff roles are contained in those allowed by page
+ */
+function checkRoles(page) {
+  const authorizedRoles = {
+    access: ["admin"],
+    settings: ["admin"],
+    messanger: ["messanger", "admin"],
+  };
+  if (!authStore.user) {
+    return false
+  } 
+  return authorizedRoles[page].some(rdx => authStore.user.roles.includes(rdx));
+} 
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <HelloWorld msg="Vite + Vue" />
+    <div class="app-container bg-light">
+        <nav v-show="authStore.user" class="navbar navbar-expand navbar-dark bg-dark">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <RouterLink to="/" class="nav-item nav-link">Home</RouterLink>
+            </li>
+            <li v-if="pagePermitted.access" class="nav-item">
+              <RouterLink to="/access" class="nav-item nav-link">Access Manager</RouterLink>
+            </li>
+            <li v-if="pagePermitted.settings" class="nav-item">
+              <RouterLink to="/settings" class="nav-item nav-link">Settings</RouterLink>
+            </li>
+            <li v-if="pagePermitted.messenger" class="nav-item">
+              <RouterLink to="/messenger" class="nav-item nav-link">Messenger</RouterLink>
+            </li>
+          </ul>
+          <a @click="authStore.logout()" class="nav-item nav-link">Logout <i class="bi bi-box-arrow-right"></i></a>
+        </nav>
+        <div class="container pt-4 pb-4">
+            <RouterView />
+        </div>
+    </div>
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+<style>
+@import '@/assets/base.css';
 </style>
