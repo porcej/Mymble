@@ -8,7 +8,7 @@ const authStore = useAuthStore();
 const pagePermitted = {
   access: checkRoles("access"),
   settings: checkRoles("settings"),
-  messanger: checkRoles("messanger"),
+  messenger: checkRoles("messenger"),
 };
 
 /**
@@ -21,7 +21,7 @@ function checkRoles(page) {
   const authorizedRoles = {
     access: ["admin"],
     settings: ["admin"],
-    messanger: ["messanger", "admin"],
+    messenger: ["messenger", "admin"],
   };
   if (!authStore.user) {
     return false

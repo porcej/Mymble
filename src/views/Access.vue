@@ -57,7 +57,7 @@ console.log("Roles:" , roles);
                             class="form-control"
                             :id="`user-${user.username}`"
                             :placeholder="user.username"
-                            :value="user.username"
+                            v-model="user.username"
                         >
                     </td>
                     <td v-for="(role, rdx) in roles" :key="rdx" class="text-center">
@@ -69,30 +69,6 @@ console.log("Roles:" , roles);
                             :checked="user.roles.includes(role)"
                         >
                     </td>
-                    <td>
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            <button class="btn btn-outline-warning" data-toggle="modal" data-target="#editStationModal" data-station-name="{{ station.name }}"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteStationModal" data-station-name="{{ station.name }}"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                    </td>
-                </tr>
-                <tr data-user="joseph.porcelli">
-                    <td>joseph.porcelli</td>
-                    <td> X </td>
-                    <td> X </td>
-                    <td> X </td>
-                    <td>
-                        <div class="btn-group" role="group" aria-label="Basic example">
-                            <button class="btn btn-outline-warning" data-toggle="modal" data-target="#editStationModal" data-station-name="{{ station.name }}"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-outline-danger" data-toggle="modal" data-target="#deleteStationModal" data-station-name="{{ station.name }}"><i class="fas fa-trash-alt"></i></button>
-                        </div>
-                    </td>
-                </tr>
-                <tr data-user="joseph.porcelli">
-                    <td>joseph.porcelli</td>
-                    <td> X </td>
-                    <td> X </td>
-                    <td> X </td>
                     <td>
                         <div class="btn-group" role="group" aria-label="Basic example">
                             <button class="btn btn-outline-warning" data-toggle="modal" data-target="#editStationModal" data-station-name="{{ station.name }}"><i class="fas fa-pen"></i></button>
