@@ -66,7 +66,7 @@ console.log("Roles:" , roles);
                             type="checkbox"
                             :id="`role-${user.username}-${role}`"
                             :value="role"
-                            :checked="user.roles.includes(role)"
+                            v-model="user.roles"
                         >
                     </td>
                     <td>
