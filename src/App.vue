@@ -37,13 +37,13 @@ function checkRoles(page) {
             <li class="nav-item">
               <RouterLink to="/" class="nav-item nav-link">Home</RouterLink>
             </li>
-            <li v-if="pagePermitted.access" class="nav-item">
+            <li v-show="pagePermitted.access" class="nav-item">
               <RouterLink to="/access" class="nav-item nav-link">Access Manager</RouterLink>
             </li>
-            <li v-if="pagePermitted.settings" class="nav-item">
+            <li v-show="pagePermitted.settings" class="nav-item">
               <RouterLink to="/settings" class="nav-item nav-link">Settings</RouterLink>
             </li>
-            <li v-if="pagePermitted.messenger" class="nav-item">
+            <li v-show="pagePermitted.messenger" class="nav-item">
               <RouterLink to="/messenger" class="nav-item nav-link">Messenger</RouterLink>
             </li>
           </ul>
