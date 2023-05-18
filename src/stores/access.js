@@ -12,7 +12,7 @@ import { defineStore } from 'pinia';
 import { fetchApi } from '@/helpers';
 import { router} from '@/router';
 
-const baseUrl = `${import.meta.env.VITE_API_URL}/Access`;
+const baseUrl = `${import.meta.env.VITE_API_URL}`;
 
 /** Store for Access Control Users */
 export const useUsersStore = defineStore({

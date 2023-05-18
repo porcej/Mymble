@@ -12,6 +12,11 @@ const { users } = storeToRefs(usersStore);
 const rolesStore = useRolesStore();
 const { roles } = storeToRefs(rolesStore);
 
+const newUser = { 
+    username: "",
+    roles: [],
+}
+
 usersStore.getAll();
 rolesStore.getAll();
 
@@ -86,6 +91,7 @@ console.log("Roles:" , roles);
                                 id="new_username"
                                 name="name"
                                 placeholder="New Username"
+                                v-model="newUser.username"
                                 required
                             >
                         </td>
@@ -94,7 +100,7 @@ console.log("Roles:" , roles);
                                 class="form-check-input"
                                 type="checkbox"
                                 :id="`new-user-role-${role}`"
-                                :value="role"
+                                v-model="newUser.roles"
                             >
                         </td>
                         <td><button class="btn btn-outline-success" id="new_user"><i class="fas fa-plus-circle"></i></button></td>
