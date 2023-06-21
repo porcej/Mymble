@@ -23,11 +23,12 @@ function checkRoles(page) {
     settings: ["admin"],
     messenger: ["messenger", "admin"],
   };
-  if (!authStore.user) {
+  if (!authStore.user || !authStore.user.roles) {
     return false
   } 
   return authorizedRoles[page].some(rdx => authStore.user.roles.includes(rdx));
-} 
+}
+
 </script>
 
 <template>
@@ -36,9 +37,6 @@ function checkRoles(page) {
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
               <RouterLink to="/" class="nav-item nav-link">Home</RouterLink>
-            </li>
-            <li v-show="pagePermitted.access" class="nav-item">
-              <RouterLink to="/access" class="nav-item nav-link">Access Manager</RouterLink>
             </li>
             <li v-show="pagePermitted.settings" class="nav-item">
               <RouterLink to="/settings" class="nav-item nav-link">Settings</RouterLink>
@@ -58,3 +56,4 @@ function checkRoles(page) {
 <style>
 @import '@/assets/base.css';
 </style>
+

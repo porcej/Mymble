@@ -1,14 +1,23 @@
+/**
+ * SPA Router
+ * 
+ * @Mymble
+ * @author joe@kt3i.com
+ * @version 0.0.1
+ * @license MIT
+ */
+
 import { createRouter, createWebHistory } from 'vue-router';
 
 import { useAuthStore } from '@/stores';
-import { Main, Access, Settings, Messenger, Login } from '@/views';
+import { Main, AccessControl, Settings, Messenger, Login } from '@/views';
 
 export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     linkActiveClass: 'active',
     routes: [
         { path: '/', component: Main },
-        { path: '/access', component: Access },
+        { path: '/accesscontrol', component: AccessControl },
         { path: '/messenger', component: Messenger },
         { path: '/settings', component: Settings },
         { path: '/login', component: Login }

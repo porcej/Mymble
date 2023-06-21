@@ -13,6 +13,17 @@ import { router} from '@/router';
 
 const baseUrl = `${import.meta.env.VITE_API_URL}`;
 
+function parseJwt (token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
+}
+
+
 export const useAuthStore = defineStore({
     id: 'auth',
 
@@ -33,6 +44,9 @@ export const useAuthStore = defineStore({
          */
         async login(username, password) {
             const user = await fetchApi.post(`${baseUrl}/auth`, { username, password });
+
+            const parsed_token = parseJwt(user.token);
+            user.roles = parsed_token["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
             // update pinia state
             this.user = user;
