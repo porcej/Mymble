@@ -1,5 +1,6 @@
 <script setup>
-import { reactive, computed } from "vue";
+import Quill from 'quill';
+import { reactive, computed, ref } from "vue";
 import { storeToRefs } from 'pinia';
 
 import { useAuthStore, useMessagesStore, useMessageTypesStore, useCampaignsStore } from '@/stores';
@@ -32,9 +33,20 @@ const newMessage = reactive({
         "content": ""
 });
 
-// const newCampaign = reactive({});
 
+let currentMessage = 0;
 
+function updateContent(content) {
+    if (currentMessage == 0) {
+        newMessage.content = content;
+    } else {
+        var thisMessage = messages.filter(m => {
+          return m.messageId === currentMessage
+        });
+        thisMessage.content = content;
+    }
+    currentMessage = 0;
+}
 
 
 messagesStore.getAll();
@@ -81,7 +93,7 @@ const selectedMessage = "";
 </script>
 
 <template>
-    <message-form></message-form>
+    <message-form v-on:save-message-content="updateContent"></message-form>
     <div id="user-table" class="table-wrapper">
         <div class="table-title">
             <div class="row">
@@ -243,7 +255,7 @@ const selectedMessage = "";
                     <td>
                         <button 
                             class="btn btn-outline-success"
-                            @click=""
+                            @click="editContentNew"
                         >
                             Edit
                         </button>

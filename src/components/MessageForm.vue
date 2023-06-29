@@ -1,7 +1,7 @@
 <template>
   <div>
     <div ref="editor" class="quill-editor"></div>
-    <button @click="submit">Submit</button>
+    <button @click="submit">Save</button>
   </div>
 </template>
 
@@ -29,8 +29,9 @@ export default {
   methods: {
     submit() {
       const message = this.quill.root.innerHTML;
-      // Perform the submission logic here, e.g., send the message to a server
-      console.log('Submitted message:', message);
+      this.quill.root.innerHTML = "";
+      this.$emit('save-message-content', message);
+      console.log('saved message:', message);
     },
   },
 };
