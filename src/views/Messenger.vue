@@ -2,8 +2,8 @@
 import { reactive, computed } from "vue";
 import { storeToRefs } from 'pinia';
 
-import { useAuthStore, useSettingsStore, useSettingTypesStore } from '@/stores';
-
+import { useAuthStore, useMessagesStore, useMessageTypesStore, useCampaignsStore } from '@/stores';
+import MessageForm from "@/components/MessageForm.vue";
 
 const authStore = useAuthStore();
 const { user: authUser } = storeToRefs(authStore);
@@ -18,49 +18,70 @@ const { messageTypes } = storeToRefs(messageTypesStore);
 const campaignsStore = useCampaignsStore();
 const { campaigns } = storeToRefs(campaignsStore);
 
-const newMessage = reactive({});
-const newCampaign = reactive({});
+// const newMessage = reactive({});
+
+const newMessage = reactive({ 
+        "title": "",
+        "messageType": {
+            "messageTypeId": 1,
+            name:"full-page"
+        },
+        "approved": false,
+        "active": false,
+        "emergent": false,
+        "content": ""
+});
+
+// const newCampaign = reactive({});
+
+
+
 
 messagesStore.getAll();
 messageTypesStore.getAll();
-campaignsStore.getAll();
+// campaignsStore.getAll();
 
-function handleSettingTypeChange(setting) {
+function handleMessageTypeChange(message) {
     // Handle the case where we are changing to the same typeid
-    if (setting.settingTypeId == setting.settingType.settingTypeId) return;
+    if (message.messageTypeId == message.messageType.messageTypeId) return;
 
-    const st = settingTypes.value.find(st => st.settingTypeId == setting.settingTypeId);
-    setting.settingType = st;;
+    const st = messageTypes.value.find(st => st.messageTypeId == message.messageTypeId);
+    message.messageType = st;
 };
 
 
-function updateSetting(settingId) {
-    settingsStore.updateSetting(settingId)
+function updateMessage(messageId) {
+    messagesStore.updateMessage(messageId)
         .catch(error => setErrors({ apiError: error }));
 }
 
-function deleteSetting(settingId) {
-    settingsStore.deleteSetting(settingId)
+function deleteMessage(messageId) {
+    messagesStore.deleteMessage(messageId)
         .catch(error => setErrors({ apiError: error }));
 }
 
-function addSetting() {
-    settingsStore.addSetting(newSetting)
+function addMessage() {
+    messagesStore.addMessage(newMessage)
         .catch(error => setErrors({ apiError: error }));
-    newSetting.field = "";
-    newSetting.value = "";
-    newSetting.settingType.inputControlType = "text";
-    newSetting.settingTypeId = 1;
+    newMessage.title = "";
+    newMessage.messageTypeId = 1;
+    newMessage.approved = false;
+    newMessage.active = false;
+    newMessage.emergent = false;
+    newMessage.content = "";
 }
 
 function setErrors(msg) {
     console.warn(msg);
 }
 
+const formData = "";
+const selectedMessage = "";
 
 </script>
 
 <template>
+    <message-form></message-form>
     <div id="user-table" class="table-wrapper">
         <div class="table-title">
             <div class="row">
@@ -71,65 +92,99 @@ function setErrors(msg) {
                 </div>
             </div>
         </div>
-
         <table class="table table-striped table-hover">
             <thead>
                 <tr>
-                    <th>Setting</th>
-                    <th>Value</th>
+                    <th>Title</th>
                     <th>Type</th>
+                    <th>Approval</th>
+                    <th>Active</th>
+                    <th>Emergent</th>
+                    <th>Content</th>
+               <!-- <th>Campaigns</th> -->
+                    <th>&nbsp;</th>
                 </tr>
             </thead>
-            <tbody v-if="settings.length">
-                <tr v-for="setting in settings" :key="setting.systemSettingId" :data-setting="settings.systemSettingId">
+            <tbody v-if="messages.length">
+                <tr
+                    v-for="message in messages"
+                    :key="message.messageId"
+                    :data-message="message.messageId"
+                >
                     <td>
                         <input
                             type="text"
                             class="form-control"
-                            :id="`setting-field-${setting.systemSettingId}`"
-                            :placeholder="setting.field"
-                            v-model="setting.field"
-                        >
-                    </td>
-                    <td>
-                        <input
-                            :type="setting.settingType.inputControlType"
-                            class="form-control"
-                            :id="`setting-value-${setting.systemSettingId}`"
-                            v-model="setting.value"
+                            id="`message-title-${message.messageId}`"
+                            :placeholder="`${message.title}`"
+                            v-model="message.title"
                         >
                     </td>
                     <td>
                         <select 
-                            :id="`setting-type-${setting.systemSettingId}`"
-                            :name="`setting-type-${setting.systemSettingId, setting.systemSettingId}`"
+                            :id="`message-type-${message.messageId}`"
+                            :name="`message-type-${message.messageId}`"
                             class="form-control"
-                            @change="handleSettingTypeChange(setting)"
-                            v-model="setting.settingTypeId"
+                            @change="handleMessageTypeChange(message)"
+                            v-model="message.messageTypeId"
                         >
                             <option 
-                                v-for="settingType in settingTypes"
-                                :key="settingType.settingTypeId"
-                                :value="settingType.settingTypeId"
-                                :selected="setting.settingTypeId == settingType.settingTypeId"
+                                v-for="messageType in messageTypes"
+                                :key="messageType.messageTypeId"
+                                :value="messageType.messageTypeId"
+                                :selected="message.messageTypeId == messageType.messageTypeId"
                             >
-                                {{ settingType.name }}
+                                {{ messageType.name }}
                             </option>
                         </select>
                     </td>
                     <td>
+                        <input
+                            type="checkbox"
+                            v-model="message.approved"
+                            :id="`message-approved-${message.messageId}`"
+                        >
+                    </td>
+                    <td>
+                        <input
+                            type="checkbox"
+                            v-model="message.active"
+                            :id="`message-active-${message.messageId}`"
+                        >
+                    </td>
+                    <td>
+                        <input
+                            type="checkbox"
+                            v-model="message.emergent"
+                            :id="`message-emergent-${message.messageId}`"
+                        >
+                    </td>
+                    <td>
+                        <button 
+                            class="btn btn-outline-success"
+                            @click=""
+                        >
+                            Edit
+                        </button>
+                        <input
+                            type="hidden"
+                            :id="`message-content-${message.messageId}`"
+                            v-model="message.content"
+                        >
+                    </td>
+                     <td>
                         <div class="btn-group" role="group" aria-label="Basic example">
                             <button 
                                 class="btn btn-outline-warning"
-                                 @click="updateSetting(setting.systemSettingId)"
+                                 @click="updateMessage(message.messageId)"
                             >
-                                <i class="fas fa-floppy-disk">UP</i>
+                                <font-awesome-icon icon="fa-solid fa-floppy-disk" />
                             </button>
                             <button 
                                 class="btn btn-outline-danger" 
-                                 @click="deleteSetting(setting.systemSettingId)"
+                                 @click="deleteMessage(message.messageId)"
                             >
-                                <i class="fas fa-trash-alt"></i>
+                                <font-awesome-icon icon="fa-solid fa-trash-alt" />
                             </button>
                         </div>
                     </td>
@@ -141,63 +196,88 @@ function setErrors(msg) {
                         <input
                             type="text"
                             class="form-control"
-                            id="new-setting-field"
-                            placeholder="Field"
-                            v-model="newSetting.field"
-                        >
-                    </td>
-                    <td>
-                        <input
-                            :type="newSetting.settingType.inputControlType"
-                            class="form-control"
-                            id="new-setting-value"
-                            placeholder="Value"
-                            v-model="newSetting.value"
+                            id="new-message-title"
+                            placeholder="Title"
+                            v-model="newMessage.title"
                         >
                     </td>
                     <td>
                         <select 
-                            id="new-setting-type"
-                            name="new-setting-type"
+                            id="message-type-new"
+                            name="message-type-new"
                             class="form-control"
-                            @change="handleSettingTypeChange(newSetting)"
-                            v-model="newSetting.settingTypeId"
+                            @change="handleMessageTypeChange(newMessage)"
+                            v-model="newMessage.messageTypeId"
                         >
                             <option 
-                                v-for="settingType in settingTypes"
-                                :key="settingType.settingTypeId"
-                                :value="settingType.settingTypeId"
-                                :selected="newSetting.settingTypeId == settingType.settingTypeId"
+                                v-for="messageType in messageTypes"
+                                :key="messageType.messageTypeId"
+                                :value="messageType.messageTypeId"
+                                :selected="newMessage.messageTypeId == messageType.messageTypeId"
                             >
-                                {{ settingType.name }}
+                                {{ messageType.name }}
                             </option>
                         </select>
                     </td>
                     <td>
+                        <input
+                            type="checkbox"
+                            v-model="newMessage.approved"
+                            id="message-approved-new"
+                        >
+                    </td>
+                    <td>
+                        <input
+                            type="checkbox"
+                            v-model="newMessage.active"
+                            id="message-active-new"
+                        >
+                    </td>
+                    <td>
+                        <input
+                            type="checkbox"
+                            v-model="newMessage.emergent"
+                            id="message-emergent-new"
+                        >
+                    </td>
+                    <td>
                         <button 
                             class="btn btn-outline-success"
-                             @click="addSetting()"
+                            @click=""
                         >
-                            <i class="fas fa-plus-circle"></i>
+                            Edit
+                        </button>
+                        <input
+                            type="hidden"
+                            id="message-content-new"
+                            v-model="newMessage.content"
+                        >
+                    </td>
+                    <td>
+                        <button 
+                            class="btn btn-outline-success"
+                             @click="addMessage()"
+                        >
+                            <font-awesome-icon icon="fa-solid fa-plus-circle" />
                         </button>
                     </td>
                 </tr>
             </tfoot>
         </table>
         <div
-            v-if="settings.loading || settingTypes.loading"
+            v-if="messages.loading || messageTypes.loading"
             class="spinner-border spinner-border-sm"
         >
         </div>
         <div
-            v-if="settings.error" class="text-danger"
+            v-if="messages.error" class="text-danger"
         >
-            Error loading settings: {{settings.error}}
+            Error loading messages: {{messages.error}}
         </div>
         <div
-            v-if="settingTypes.error" class="text-danger"
+            v-if="messageTypes.error" class="text-danger"
         >
-            Error loading setting types: {{settingTypes.error}}
+            Error loading message types: {{messageTypes.error}}
         </div>
     </div>
 </template>

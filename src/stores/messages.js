@@ -63,7 +63,7 @@ export const useMessagesStore = defineStore({
          *
          */
          async addMessage(message) {
-            const nset = (({ field, value, messageTypeId }) => ({ field, value, messageTypeId }))(message);
+            const nset = (({ title, messageTypeId, approved, active, emergent, content }) => ({ title, messageTypeId, approved, active, emergent, content }))(message);
             const response = await fetchApi.post(`${baseUrl}/messages`, nset);
             this.getAll();
             return response;

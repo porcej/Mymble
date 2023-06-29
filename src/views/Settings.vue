@@ -126,13 +126,13 @@ function setErrors(msg) {
                                 class="btn btn-outline-warning"
                                  @click="updateSetting(setting.systemSettingId)"
                             >
-                                <i class="fas fa-floppy-disk">UP</i>
+                                <font-awesome-icon icon="fa-solid fa-floppy-disk" />
                             </button>
                             <button 
                                 class="btn btn-outline-danger" 
                                  @click="deleteSetting(setting.systemSettingId)"
                             >
-                                <i class="fas fa-trash-alt"></i>
+                                <font-awesome-icon icon="fa-solid fa-trash-alt" />
                             </button>
                         </div>
                     </td>
@@ -181,7 +181,7 @@ function setErrors(msg) {
                             class="btn btn-outline-success"
                              @click="addSetting()"
                         >
-                            <i class="fas fa-plus-circle"></i>
+                            <font-awesome-icon icon="fa-solid fa-plus-circle" />
                         </button>
                     </td>
                 </tr>
