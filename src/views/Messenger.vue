@@ -8,7 +8,7 @@
 
 <script setup>
 import Quill from 'quill';
-import { reactive, computed, ref } from "vue";
+import { reactive } from "vue";
 import { storeToRefs } from 'pinia';
 import { useAuthStore, useMessagesStore, useMessageTypesStore, useCampaignsStore } from '@/stores';
 import MessageForm from "@/components/MessageForm.vue";
