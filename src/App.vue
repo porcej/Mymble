@@ -1,17 +1,16 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
 import { reactive, computed } from "vue";
+import { storeToRefs } from 'pinia';
 
-import { useAuthStore } from '@/stores';
+import { useAuthStore, useSettingsStore } from '@/stores';
 
 const authStore = useAuthStore();
 
-const authorizedRoles = {
-  access: ["admin"],
-  settings: ["admin"],
-  messenger: ["author"],
-  approver: ["approver"],
-};
+const settingsStore = useSettingsStore();
+const { settings } = storeToRefs(settingsStore);
+
+settingsStore.getAll();
 
 /**
  * Computed method to determine if a user is authorized to view Settings Page
@@ -20,7 +19,11 @@ const authorizedRoles = {
  */
 const showSettings = computed(() => {
   if (authStore.user && authStore.user.roles) {
-    return authorizedRoles["settings"].some(rdx => authStore.user.roles.includes(rdx));
+    if (settingsStore.settings && settingsStore.settings.length > 0) {
+      const setting = settingsStore.settings.find(s => s.field === import.meta.env.VITE_SETTINGS_ACCESS_FIELD).value;
+      const authorizedRoles = setting.replace(/\s*\,\s*/g, ",").trim().split(",");
+      return authorizedRoles.some(rdx => authStore.user.roles.includes(rdx));
+    }
   }
   return false;
 });
@@ -32,7 +35,11 @@ const showSettings = computed(() => {
  */
 const showMessenger = computed(() => {
   if (authStore.user && authStore.user.roles) {
-    return authorizedRoles["messenger"].some(rdx => authStore.user.roles.includes(rdx));
+    if (settingsStore.settings && settingsStore.settings.length > 0) {
+      const setting = settingsStore.settings.find(s => s.field === import.meta.env.VITE_MESSENGER_ACCESS_FIELD).value;
+      const authorizedRoles = setting.replace(/\s*\,\s*/g, ",").trim().split(",");
+      return authorizedRoles.some(rdx => authStore.user.roles.includes(rdx));
+    }
   }
   return false;
 });
@@ -44,7 +51,11 @@ const showMessenger = computed(() => {
  */
 const showApprover = computed(() => {
   if (authStore.user && authStore.user.roles) {
-    return authorizedRoles["approver"].some(rdx => authStore.user.roles.includes(rdx));
+    if (settingsStore.settings && settingsStore.settings.length > 0) {
+      const setting = settingsStore.settings.find(s => s.field === import.meta.env.VITE_APPROVER_ACCESS_FIELD).value;
+      const authorizedRoles = setting.replace(/\s*\,\s*/g, ",").trim().split(",");
+      return authorizedRoles.some(rdx => authStore.user.roles.includes(rdx));
+    }
   }
   return false;
 });
