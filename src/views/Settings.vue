@@ -100,6 +100,7 @@ function setErrors(msg) {
             <div class="row">
                 <div class="col-sm-6">
                     <h2>Dashboard Settings</h2>
+                    <p class="text-warning">Warning, changes to theses settings may prevent access or causes deteramental perfornace.  Be careful. </p>
                 </div>
                 <div class="col-sm-6">
                 </div>
