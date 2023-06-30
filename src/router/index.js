@@ -10,14 +10,19 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
 import { useAuthStore } from '@/stores';
-import { Main, AccessControl, Settings, Messenger, Login } from '@/views';
+import { Main, Login } from '@/views';
+
+// lazy-loaded
+const Settings = () => import('@/views/Settings.vue');
+const Messenger = () => import('@/views/Messenger.vue');
+const Approver = () => import('@/views/Approver.vue');
 
 export const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     linkActiveClass: 'active',
     routes: [
         { path: '/', component: Main },
-        { path: '/accesscontrol', component: AccessControl },
+        { path: '/approver', component: Approver },
         { path: '/messenger', component: Messenger },
         { path: '/settings', component: Settings },
         { path: '/login', component: Login }

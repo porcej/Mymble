@@ -6,13 +6,6 @@ import { useAuthStore } from '@/stores';
 
 const authStore = useAuthStore();
 
-/**
- * Checks if roles are permitted - wraps fetch to handle an api with authentication 
- *
- * @params {String} page page requesting access for
- * @returns {Bool} true iff roles are contained in those allowed by page
- */
-
 const authorizedRoles = {
   access: ["admin"],
   settings: ["admin"],
