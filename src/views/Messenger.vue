@@ -1,5 +1,5 @@
 /**
- * Message Authoring &mp; Editing Interface
+ * Message Authoring &mp; Editing Interface (MAEI)
  * @Mymble
  * @author joe@kt3i.com
  * @version 0.0.1
