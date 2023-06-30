@@ -42,10 +42,19 @@ export const useMessagesStore = defineStore({
          *
          */
          async updateMessage(messageId) {
-            const message = this.messages.find(st => st.systemMessageId== messageId);
+            const message = this.messages.find(m => m.messageId == messageId);
             const response = await fetchApi.put(`${baseUrl}/messages/${messageId}`, message);
             this.getAll();
             return response;
+        },
+
+        /**
+         * Updates the local message content
+         *
+         */
+        updateMessageContent(messageId, content) {
+            const message = this.messages.find(m => m.messageId == messageId);
+            message.content = content;
         },
 
         /**
