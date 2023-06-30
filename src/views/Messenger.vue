@@ -1,8 +1,15 @@
+/**
+ * Message Authoring &mp; Editing Interface
+ * @Mymble
+ * @author joe@kt3i.com
+ * @version 0.0.1
+ * @license MIT
+ */
+
 <script setup>
 import Quill from 'quill';
 import { reactive, computed, ref } from "vue";
 import { storeToRefs } from 'pinia';
-
 import { useAuthStore, useMessagesStore, useMessageTypesStore, useCampaignsStore } from '@/stores';
 import MessageForm from "@/components/MessageForm.vue";
 
@@ -15,12 +22,10 @@ const { messages } = storeToRefs(messagesStore);
 const messageTypesStore = useMessageTypesStore();
 const { messageTypes } = storeToRefs(messageTypesStore);
 
-
 const campaignsStore = useCampaignsStore();
 const { campaigns } = storeToRefs(campaignsStore);
 
-// const newMessage = reactive({});
-
+// Holds a new message before adding it to the server
 const newMessage = reactive({ 
         "title": "",
         "messageType": {
@@ -33,45 +38,59 @@ const newMessage = reactive({
         "content": ""
 });
 
-
-let currentMessage = 0;
-
-function updateContent(content) {
-    if (currentMessage == 0) {
-        newMessage.content = content;
-    } else {
-        var thisMessage = messages.filter(m => {
-          return m.messageId === currentMessage
-        });
-        thisMessage.content = content;
-    }
-    currentMessage = 0;
-}
-
+// Holds information relavant to the message content editor
+const editor = reactive({ 
+        "title": "",
+        "show": false,
+        "content": "",
+        "messageId": 0,
+});
 
 messagesStore.getAll();
 messageTypesStore.getAll();
-// campaignsStore.getAll();
+campaignsStore.getAll();
 
+/**
+ * Updates a message type based on drop down value
+ *
+ * @params {Object} message - object reference to be updated
+ */
 function handleMessageTypeChange(message) {
     // Handle the case where we are changing to the same typeid
     if (message.messageTypeId == message.messageType.messageTypeId) return;
 
-    const st = messageTypes.value.find(st => st.messageTypeId == message.messageTypeId);
-    message.messageType = st;
+    const mt = messageTypes.value.find(
+        mt => mt.messageTypeId == message.messageTypeId
+    );
+    message.messageType = mt;
 };
 
-
+/**
+ * Calls the messageStore's update message and handles errors
+ *
+ * @params {Number} messageId
+ */
 function updateMessage(messageId) {
     messagesStore.updateMessage(messageId)
         .catch(error => setErrors({ apiError: error }));
 }
 
+/**
+ * Calls the messageStore's delete message and handles errors
+ *
+ * @params {Number} messageId
+ */
 function deleteMessage(messageId) {
     messagesStore.deleteMessage(messageId)
         .catch(error => setErrors({ apiError: error }));
 }
 
+/**
+ * Calls the messageStore's add new message and handles errors
+ * resets newMessage to default values
+ *
+ * @params {Object} newMessage
+ */
 function addMessage() {
     messagesStore.addMessage(newMessage)
         .catch(error => setErrors({ apiError: error }));
@@ -83,17 +102,71 @@ function addMessage() {
     newMessage.content = "";
 }
 
+/**
+ * Displays errors to the console
+ *
+ * @params {Object} newMessage
+ */
 function setErrors(msg) {
     console.warn(msg);
 }
 
-const formData = "";
-const selectedMessage = "";
+/**
+ * Calls the content Editor modal and passes information to said modal
+ *
+ * @params {String} title - to be displayed in modal heading
+ * @params {String} content - current content to pre-populate editor
+ * @params {Number} id - Message id that is being edited
+ */
+function editContent(title="", content="", id=0) {
+    if (title === "") {
+        title = "New Message"
+    }
+    editor.title = title;
+    editor.content = content;
+    editor.messageId = id;
+    console.debug(`Showing Modal for ${title} (${id}):`, content);
+    editor.show = true;
+}
+
+/**
+ * Saves content from editor to message and closes the modal
+ *
+ * @params {String} content - most recent version of the content
+ */
+function updateContent(content) {
+    if (editor.messageId == 0) {
+        newMessage.content = content;
+    } else {
+        messagesStore.updateMessageContent(editor.messageId, content);
+    }
+    closeEditor();
+}
+
+/**
+ * Closes the content editor modal and resets to default values
+ */
+function closeEditor() {
+    // Return Editor Values to their default
+    editor.show = false;
+    editor.messageId = 0;
+    editor.title = "";
+    editor.content = "";
+}
 
 </script>
 
 <template>
-    <message-form v-on:save-message-content="updateContent"></message-form>
+    <transition name="modal">
+        <message-form
+            v-on:save-message-content="updateContent"
+            v-if="editor.show"
+            :title="editor.title"
+            :content="editor.content"
+            @close-message-content="closeEditor"
+        >
+        </message-form>
+    </transition>
     <div id="user-table" class="table-wrapper">
         <div class="table-title">
             <div class="row">
@@ -174,7 +247,7 @@ const selectedMessage = "";
                     <td>
                         <button 
                             class="btn btn-outline-success"
-                            @click=""
+                            @click="editContent(title=message.title, content=message.content, id=message.messageId)"
                         >
                             Edit
                         </button>
@@ -255,7 +328,7 @@ const selectedMessage = "";
                     <td>
                         <button 
                             class="btn btn-outline-success"
-                            @click="editContentNew"
+                            @click="editContent(title=newMessage.title, content=newMessage.content, id=0)"
                         >
                             Edit
                         </button>
